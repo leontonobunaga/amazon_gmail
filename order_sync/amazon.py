@@ -23,6 +23,7 @@ class AmazonConfig:
     base_url: str = "https://www.amazon.co.jp"
     orders_url: str = "https://www.amazon.co.jp/gp/your-account/order-history"
     wait_seconds: float = 3.0
+    driver_path: Path | None = None
 
 
 class AmazonOrderFetcher:
@@ -34,10 +35,21 @@ class AmazonOrderFetcher:
     def _create_driver(self) -> webdriver.Chrome:
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
-        driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=options,
+        driver_binary = (
+            str(self.config.driver_path)
+            if self.config.driver_path is not None
+            else ChromeDriverManager().install()
         )
+        try:
+            driver = webdriver.Chrome(
+                service=Service(driver_binary),
+                options=options,
+            )
+        except OSError as exc:
+            raise RuntimeError(
+                "ChromeDriver の起動に失敗しました。自動ダウンロードされたバイナリが環境に対応していない可能性があります。 "
+                "ChromeDriver を手動でダウンロードし、AmazonConfig.driver_path もしくは --chrome-driver オプションでパスを指定してください。"
+            ) from exc
         return driver
 
     def _load_cookies(self, driver: webdriver.Chrome) -> None:
