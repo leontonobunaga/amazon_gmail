@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.env
+orders.csv
+cookies.json
+token.json
+credentials.json
+webdriver/
+chromedriver
