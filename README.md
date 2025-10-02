@@ -17,10 +17,17 @@
    pip install -r requirements.txt
    ```
 
-2. **Gmail API の設定**
-   - Google Cloud Consoleでプロジェクトを作成し、Gmail APIを有効化します。
-   - 認証情報から「OAuthクライアントID (デスクトップアプリ)」を作成し、`credentials.json` をリポジトリ直下に配置します。
-   - 初回実行時はブラウザが起動し、Googleアカウントの認可を求められます。
+
+   > `requirements.txt` に PyInstaller も含まれているため、後述の EXE 化手順を行う場合に追加インストールは不要です。
+
+2. **Gmail API の設定（初心者向けステップ）**
+   1. [Google Cloud Console](https://console.cloud.google.com/) を開き、右上の「プロジェクトを選択」→「新しいプロジェクト」をクリックして任意の名前でプロジェクトを作成します。
+   2. 左上のハンバーガーメニューから「APIとサービス」→「ライブラリ」を開き、検索ボックスで「Gmail API」を検索して「有効にする」をクリックします。
+   3. 「APIとサービス」→「認証情報」→「認証情報を作成」→「OAuthクライアントID」を選択します。
+      - 事前に「同意画面を構成」ボタンが出た場合は、ユーザータイプで「外部」を選び、アプリ名とサポートメールを入力して保存します。
+      - アプリケーションの種類は「デスクトップアプリ」を選択し、名前は任意でOKです。
+   4. 作成されたクライアントIDのダウンロードボタンから `credentials.json` を取得し、このリポジトリの直下（`main.py` と同じ階層）に保存します。
+   5. 初回にスクリプトを実行するとブラウザが立ち上がるので、Googleアカウントでログインしてアクセス権限を承認してください。認可後、`token.json` が自動生成されます。
 
 3. **Amazon への手動ログイン**
    - スクリプトがSeleniumでブラウザを起動します。初回はAmazonに手動でログインし、ログイン完了後にコンソールへ戻ってEnterキーを押してください。
@@ -29,7 +36,21 @@
 ## 使い方
 
 ```bash
+
+python main.py
+```
+
+1. 実行するとコンソールに「開始日 (YYYY-MM-DD)」「終了日 (YYYY-MM-DD)」の入力が順番に表示されるので、例 `2023-09-01` のように入力してください。
+2. 空欄や形式が正しくない場合は、再入力を促すメッセージが表示されます。
+3. 日付入力後は自動でAmazon→Gmail→CSV出力の処理が行われ、完了すると `orders.csv` へ件数とともに書き出し結果が表示されます。
+
+オプションとして、以下のように引数を指定してバッチ処理も可能です。
+
+```bash
+python main.py --start-date 2023-09-01 --end-date 2023-09-30 \
+
 python main.py 2023-09-01 2023-09-30 \
+
   --output data/orders.csv \
   --cookies data/cookies.json \
   --credentials credentials.json \
@@ -37,6 +58,7 @@ python main.py 2023-09-01 2023-09-30 \
 ```
 
 - `start_date` と `end_date` はどちらも `YYYY-MM-DD` 形式です。
+
 - `--output` でCSVの出力先を指定できます (既定値: `orders.csv`)。
 - `--cookies` はAmazonセッションの保存先ファイルを指定します。
 - `--credentials` はGmail APIのクライアントシークレットファイル、`--token` はアクセストークンの保存先です。
@@ -63,6 +85,18 @@ python main.py 2023-09-01 2023-09-30 \
 - `webdriver-manager` がブラウザドライバーをダウンロードするため、初回実行時にインターネット接続が必要です。
 - Gmailの検索は最大5件のメールを対象にしています。必要に応じて `order_sync/gmail_client.py` の `find_status` 内で調整してください。
 - 取得したCSVには個人情報が含まれるため、適切に管理・保管してください。
+
+
+## EXEファイルとして配布したい場合（任意）
+
+1. 追加のライブラリは不要です（`pyinstaller` は既に `requirements.txt` に含まれています）。
+2. プロジェクト直下で次のコマンドを実行すると、`dist/order_sync_tool.exe` が生成されます。
+   ```bash
+   pyinstaller --onefile --name order_sync_tool main.py
+   ```
+3. 生成された `order_sync_tool.exe` を配布し、同じフォルダに `credentials.json`（および初回実行後の `token.json`、`cookies.json`）を置いた状態で実行してください。
+4. EXE 実行時もコンソールが開き、開始日と終了日の入力手順は Python 版と同じです。
+
 
 ## ライセンス
 

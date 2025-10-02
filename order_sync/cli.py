@@ -11,9 +11,25 @@ from .processing import OrderProcessor
 
 
 def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Amazon注文とGmail通知をCSVにエクスポートします。",
+        epilog="開始日と終了日を指定しなかった場合は、実行時に入力を求めます。",
+    )
+    parser.add_argument(
+        "--start-date",
+        dest="start_date",
+        help="取得開始日 (YYYY-MM-DD)。指定しない場合は起動後に入力できます。",
+    )
+    parser.add_argument(
+        "--end-date",
+        dest="end_date",
+        help="取得終了日 (YYYY-MM-DD)。指定しない場合は起動後に入力できます。",
+    )
+
     parser = argparse.ArgumentParser(description="Amazon注文とGmail通知をCSVにエクスポートします。")
     parser.add_argument("start_date", help="取得開始日 (YYYY-MM-DD)")
     parser.add_argument("end_date", help="取得終了日 (YYYY-MM-DD)")
+
     parser.add_argument(
         "--output",
         type=Path,
@@ -41,10 +57,38 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+
+def _resolve_date(initial: str | None, label: str) -> datetime:
+    value = initial
+    while True:
+        if not value:
+            value = input(f"{label} (YYYY-MM-DD) を入力してください: ").strip()
+        if not value:
+            print("値が入力されませんでした。もう一度入力してください。")
+            value = None
+            continue
+        try:
+            return datetime.strptime(value, "%Y-%m-%d")
+        except ValueError:
+            print("日付の形式が正しくありません。例: 2023-09-01")
+            value = None
+
+
+def main() -> None:
+    args = parse_args()
+    start = _resolve_date(args.start_date, "開始日")
+    end = _resolve_date(args.end_date, "終了日")
+
+    while end < start:
+        print("終了日は開始日以降の日付を入力してください。再入力します。")
+        start = _resolve_date(None, "開始日")
+        end = _resolve_date(None, "終了日")
+
 def main() -> None:
     args = parse_args()
     start = datetime.strptime(args.start_date, "%Y-%m-%d")
     end = datetime.strptime(args.end_date, "%Y-%m-%d")
+
 
     amazon_config = AmazonConfig(cookie_file=args.cookies)
     gmail_config = GmailConfig(credentials_file=args.credentials, token_file=args.token)
