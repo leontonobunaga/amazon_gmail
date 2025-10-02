@@ -9,3 +9,4 @@ token.json
 credentials.json
 webdriver/
 chromedriver
+config.toml

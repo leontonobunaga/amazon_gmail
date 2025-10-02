@@ -62,6 +62,20 @@ python main.py 2023-09-01 2023-09-30 \
 - `--output` でCSVの出力先を指定できます (既定値: `orders.csv`)。
 - `--cookies` はAmazonセッションの保存先ファイルを指定します。
 - `--credentials` はGmail APIのクライアントシークレットファイル、`--token` はアクセストークンの保存先です。
+- `--config` で設定値を記述したTOMLファイルを指定できます (既定値: `config.toml`)。
+- `--chrome-driver` で既にダウンロード済みのChromeDriverバイナリを指定できます。
+
+### config.toml での設定 (任意)
+
+リポジトリには `config.example.toml` を用意しています。必要に応じてコピーして `config.toml` を作成し、以下のように値を編集すると毎回のコマンド入力を簡略化できます。
+
+```toml
+[amazon]
+chrome_driver = "C:/tools/chromedriver.exe"
+```
+
+- `config.toml` を別の場所に置きたい場合は、`python main.py --config path/to/config.toml` のようにファイルパスを指定してください。
+- コマンドライン引数 (`--chrome-driver` など) は設定ファイルの値よりも優先されます。一時的に上書きしたい場合に便利です。
 
 実行後、指定したCSVファイルに次の列が出力されます。
 
@@ -83,6 +97,11 @@ python main.py 2023-09-01 2023-09-30 \
 
 - Amazonのページ構造は変更される可能性があります。レイアウト変更により要素が取得できなくなった場合は、`order_sync/amazon.py` のセレクタを調整してください。
 - `webdriver-manager` がブラウザドライバーをダウンロードするため、初回実行時にインターネット接続が必要です。
+- Windows 32bit 環境や企業ネットワークなど、`webdriver-manager` が互換性のあるChromeDriverを取得できない場合は手動でドライバーを用意してください。
+  1. 使用しているChromeのバージョンを確認し、[Chrome for Testing (ChromeDriver) の公式ダウンロードページ](https://googlechromelabs.github.io/chrome-for-testing/) から対応するバージョンとプラットフォームのアーカイブを取得します。
+  2. アーカイブを解凍し、`chromedriver`（Windowsでは `chromedriver.exe`）を任意のフォルダーに配置します。
+  3. `config.example.toml` を `config.toml` にコピーし、`amazon.chrome_driver` に配置したファイルへのパスを記述します（例: `chrome_driver = "C:/tools/chromedriver.exe"`）。
+  4. 一時的に別のバイナリを使いたい場合は、実行時に `--chrome-driver` オプションでパスを上書きできます（例: `python main.py 2023-09-01 2023-09-30 --chrome-driver C:\\tools\\chromedriver.exe`）。
 - Gmailの検索は最大5件のメールを対象にしています。必要に応じて `order_sync/gmail_client.py` の `find_status` 内で調整してください。
 - 取得したCSVには個人情報が含まれるため、適切に管理・保管してください。
 
