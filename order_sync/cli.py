@@ -13,6 +13,7 @@ from .processing import OrderProcessor
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Amazon注文とGmail通知をCSVにエクスポートします。",
+
         epilog=(
             "開始日と終了日を指定しなかった場合は、実行時に入力を求めます。"
             " 旧バージョン互換のために位置引数でも日付を指定できます。"
@@ -21,10 +22,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--start-date",
         dest="start_date_option",
+
+        epilog="開始日と終了日を指定しなかった場合は、実行時に入力を求めます。",
+    )
+    parser.add_argument(
+        "--start-date",
+        dest="start_date",
+
         help="取得開始日 (YYYY-MM-DD)。指定しない場合は起動後に入力できます。",
     )
     parser.add_argument(
         "--end-date",
+
         dest="end_date_option",
         help="取得終了日 (YYYY-MM-DD)。指定しない場合は起動後に入力できます。",
     )
@@ -38,6 +47,16 @@ def parse_args() -> argparse.Namespace:
         nargs="?",
         help="互換用の位置引数。通常は指定不要です。",
     )
+
+        dest="end_date",
+        help="取得終了日 (YYYY-MM-DD)。指定しない場合は起動後に入力できます。",
+    )
+
+    parser = argparse.ArgumentParser(description="Amazon注文とGmail通知をCSVにエクスポートします。")
+    parser.add_argument("start_date", help="取得開始日 (YYYY-MM-DD)")
+    parser.add_argument("end_date", help="取得終了日 (YYYY-MM-DD)")
+
+
     parser.add_argument(
         "--output",
         type=Path,
@@ -65,6 +84,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+
 def _resolve_date(initial: str | None, label: str) -> datetime:
     value = initial
     while True:
@@ -83,16 +103,27 @@ def _resolve_date(initial: str | None, label: str) -> datetime:
 
 def main() -> None:
     args = parse_args()
+
     start_input = args.start_date_option or args.start_date
     end_input = args.end_date_option or args.end_date
 
     start = _resolve_date(start_input, "開始日")
     end = _resolve_date(end_input, "終了日")
 
+    start = _resolve_date(args.start_date, "開始日")
+    end = _resolve_date(args.end_date, "終了日")
+
     while end < start:
         print("終了日は開始日以降の日付を入力してください。再入力します。")
         start = _resolve_date(None, "開始日")
         end = _resolve_date(None, "終了日")
+
+
+def main() -> None:
+    args = parse_args()
+    start = datetime.strptime(args.start_date, "%Y-%m-%d")
+    end = datetime.strptime(args.end_date, "%Y-%m-%d")
+
 
     amazon_config = AmazonConfig(cookie_file=args.cookies)
     gmail_config = GmailConfig(credentials_file=args.credentials, token_file=args.token)
