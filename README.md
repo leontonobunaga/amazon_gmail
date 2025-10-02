@@ -16,8 +16,6 @@
    ```bash
    pip install -r requirements.txt
    ```
-
-
    > `requirements.txt` に PyInstaller も含まれているため、後述の EXE 化手順を行う場合に追加インストールは不要です。
 
 2. **Gmail API の設定（初心者向けステップ）**
@@ -40,6 +38,17 @@
 python main.py
 ```
 
+> ⚠️ 以前のバージョンでは `python main.py 2023-09-01 2023-09-30` のように日付を
+> 位置引数で渡していましたが、最新版では対話入力が基本です。互換性のため
+> 位置引数も引き続き受け付けますが、空欄で実行して日付を聞かれたらそのまま
+> 画面の案内に従ってください。
+
+
+
+python main.py
+```
+
+
 1. 実行するとコンソールに「開始日 (YYYY-MM-DD)」「終了日 (YYYY-MM-DD)」の入力が順番に表示されるので、例 `2023-09-01` のように入力してください。
 2. 空欄や形式が正しくない場合は、再入力を促すメッセージが表示されます。
 3. 日付入力後は自動でAmazon→Gmail→CSV出力の処理が行われ、完了すると `orders.csv` へ件数とともに書き出し結果が表示されます。
@@ -49,6 +58,7 @@ python main.py
 ```bash
 python main.py --start-date 2023-09-01 --end-date 2023-09-30 \
 
+
 python main.py 2023-09-01 2023-09-30 \
 
   --output data/orders.csv \
@@ -57,7 +67,10 @@ python main.py 2023-09-01 2023-09-30 \
   --token data/token.json
 ```
 
+
+- `2023-09-01 2023-09-30` のような位置引数での指定も引き続き動作します。
 - `start_date` と `end_date` はどちらも `YYYY-MM-DD` 形式です。
+
 
 - `--output` でCSVの出力先を指定できます (既定値: `orders.csv`)。
 - `--cookies` はAmazonセッションの保存先ファイルを指定します。
@@ -87,6 +100,14 @@ python main.py 2023-09-01 2023-09-30 \
 - 取得したCSVには個人情報が含まれるため、適切に管理・保管してください。
 
 
+### 最新版へ更新するには
+
+- Git を使っている場合は `git pull origin main` を実行して最新コミットを取得してください。
+- Zip ダウンロードの場合は、既存フォルダを削除してから GitHub の **Code ▸ Download ZIP** で最新を取り直すと、古いファイルが混ざる心配がありません。
+- `python main.py` の実行結果が README 記載と異なるときは、上記手順で再取得することで解消できます。
+=======
+
+
 ## EXEファイルとして配布したい場合（任意）
 
 1. 追加のライブラリは不要です（`pyinstaller` は既に `requirements.txt` に含まれています）。
@@ -96,7 +117,6 @@ python main.py 2023-09-01 2023-09-30 \
    ```
 3. 生成された `order_sync_tool.exe` を配布し、同じフォルダに `credentials.json`（および初回実行後の `token.json`、`cookies.json`）を置いた状態で実行してください。
 4. EXE 実行時もコンソールが開き、開始日と終了日の入力手順は Python 版と同じです。
-
 
 ## ライセンス
 
