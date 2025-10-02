@@ -17,6 +17,7 @@
    pip install -r requirements.txt
    ```
 
+
    > `requirements.txt` に PyInstaller も含まれているため、後述の EXE 化手順を行う場合に追加インストールは不要です。
 
 2. **Gmail API の設定（初心者向けステップ）**
@@ -35,6 +36,7 @@
 ## 使い方
 
 ```bash
+
 python main.py
 ```
 
@@ -46,11 +48,16 @@ python main.py
 
 ```bash
 python main.py --start-date 2023-09-01 --end-date 2023-09-30 \
+
+python main.py 2023-09-01 2023-09-30 \
+
   --output data/orders.csv \
   --cookies data/cookies.json \
   --credentials credentials.json \
   --token data/token.json
 ```
+
+- `start_date` と `end_date` はどちらも `YYYY-MM-DD` 形式です。
 
 - `--output` でCSVの出力先を指定できます (既定値: `orders.csv`)。
 - `--cookies` はAmazonセッションの保存先ファイルを指定します。
@@ -79,6 +86,7 @@ python main.py --start-date 2023-09-01 --end-date 2023-09-30 \
 - Gmailの検索は最大5件のメールを対象にしています。必要に応じて `order_sync/gmail_client.py` の `find_status` 内で調整してください。
 - 取得したCSVには個人情報が含まれるため、適切に管理・保管してください。
 
+
 ## EXEファイルとして配布したい場合（任意）
 
 1. 追加のライブラリは不要です（`pyinstaller` は既に `requirements.txt` に含まれています）。
@@ -88,6 +96,7 @@ python main.py --start-date 2023-09-01 --end-date 2023-09-30 \
    ```
 3. 生成された `order_sync_tool.exe` を配布し、同じフォルダに `credentials.json`（および初回実行後の `token.json`、`cookies.json`）を置いた状態で実行してください。
 4. EXE 実行時もコンソールが開き、開始日と終了日の入力手順は Python 版と同じです。
+
 
 ## ライセンス
 
