@@ -1,0 +1,6 @@
+# config.toml のサンプルです。必要に応じてこのファイルをコピーして config.toml を作成し、値を編集してください。
+
+[amazon]
+# 既にダウンロード済みの ChromeDriver バイナリへのパス
+# Windows でバックラッシュを含む場合は "C:/tools/chromedriver.exe" のようにスラッシュで指定するか、\\ を二重にしてください。
+chrome_driver = "C:/tools/chromedriver.exe"

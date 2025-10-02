@@ -62,7 +62,24 @@ python main.py 2023-09-01 2023-09-30 \
 - `--output` でCSVの出力先を指定できます (既定値: `orders.csv`)。
 - `--cookies` はAmazonセッションの保存先ファイルを指定します。
 - `--credentials` はGmail APIのクライアントシークレットファイル、`--token` はアクセストークンの保存先です。
+
+- `--config` で設定値を記述したTOMLファイルを指定できます (既定値: `config.toml`)。
 - `--chrome-driver` で既にダウンロード済みのChromeDriverバイナリを指定できます。
+
+### config.toml での設定 (任意)
+
+リポジトリには `config.example.toml` を用意しています。必要に応じてコピーして `config.toml` を作成し、以下のように値を編集すると毎回のコマンド入力を簡略化できます。
+
+```toml
+[amazon]
+chrome_driver = "C:/tools/chromedriver.exe"
+```
+
+- `config.toml` を別の場所に置きたい場合は、`python main.py --config path/to/config.toml` のようにファイルパスを指定してください。
+- コマンドライン引数 (`--chrome-driver` など) は設定ファイルの値よりも優先されます。一時的に上書きしたい場合に便利です。
+
+- `--chrome-driver` で既にダウンロード済みのChromeDriverバイナリを指定できます。
+
 
 実行後、指定したCSVファイルに次の列が出力されます。
 

@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 from dateutil import parser as date_parser
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.common.exceptions import WebDriverException
 from webdriver_manager.chrome import ChromeDriverManager
 
 from .models import Order, OrderItem
@@ -36,6 +37,38 @@ class AmazonOrderFetcher:
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
         driver_binary = (
+
+            Path(self.config.driver_path)
+            if self.config.driver_path is not None
+            else Path(ChromeDriverManager().install())
+        )
+        if not driver_binary.exists():
+            raise RuntimeError(
+                "指定された ChromeDriver が見つかりませんでした。"
+                f"パスを確認してください: {driver_binary}"
+            )
+        try:
+            driver = webdriver.Chrome(
+                service=Service(str(driver_binary)),
+                options=options,
+            )
+        except (OSError, WebDriverException) as exc:
+            if self.config.driver_path is None:
+                guidance = (
+                    "自動ダウンロードされたバイナリが環境に対応していない可能性があります。"
+                    "ChromeDriver を手動でダウンロードし、AmazonConfig.driver_path もしくは "
+                    "--chrome-driver オプションでパスを指定してください。"
+                )
+            else:
+                guidance = (
+                    "指定された ChromeDriver が実行環境や Chrome のバージョンに対応しているか確認してください。"
+                )
+            raise RuntimeError(
+                "ChromeDriver の起動に失敗しました。\n"
+                f"使用したバイナリ: {driver_binary}\n"
+                f"{guidance}\n"
+                f"詳細: {exc}"
+
             str(self.config.driver_path)
             if self.config.driver_path is not None
             else ChromeDriverManager().install()
@@ -49,6 +82,7 @@ class AmazonOrderFetcher:
             raise RuntimeError(
                 "ChromeDriver の起動に失敗しました。自動ダウンロードされたバイナリが環境に対応していない可能性があります。 "
                 "ChromeDriver を手動でダウンロードし、AmazonConfig.driver_path もしくは --chrome-driver オプションでパスを指定してください。"
+
             ) from exc
         return driver
 
