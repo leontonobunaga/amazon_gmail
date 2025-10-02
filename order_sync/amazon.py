@@ -37,6 +37,7 @@ class AmazonOrderFetcher:
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
         driver_binary = (
+
             Path(self.config.driver_path)
             if self.config.driver_path is not None
             else Path(ChromeDriverManager().install())
@@ -67,6 +68,21 @@ class AmazonOrderFetcher:
                 f"使用したバイナリ: {driver_binary}\n"
                 f"{guidance}\n"
                 f"詳細: {exc}"
+
+            str(self.config.driver_path)
+            if self.config.driver_path is not None
+            else ChromeDriverManager().install()
+        )
+        try:
+            driver = webdriver.Chrome(
+                service=Service(driver_binary),
+                options=options,
+            )
+        except OSError as exc:
+            raise RuntimeError(
+                "ChromeDriver の起動に失敗しました。自動ダウンロードされたバイナリが環境に対応していない可能性があります。 "
+                "ChromeDriver を手動でダウンロードし、AmazonConfig.driver_path もしくは --chrome-driver オプションでパスを指定してください。"
+
             ) from exc
         return driver
 

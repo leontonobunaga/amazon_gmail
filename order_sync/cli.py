@@ -66,18 +66,21 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Gmail APIのアクセストークン保存ファイル",
     )
     parser.add_argument(
+
         "--config",
         type=Path,
         default=DEFAULT_CONFIG_FILE,
         help="設定値を上書きするTOMLファイル (デフォルト: config.toml)",
     )
     parser.add_argument(
+
         "--chrome-driver",
         dest="chrome_driver",
         type=Path,
         default=None,
         help="既存のChromeDriverバイナリへのパス (指定すると自動ダウンロードをスキップ)",
     )
+
     return parser.parse_args(argv)
 
 
@@ -104,6 +107,9 @@ def _get_path_setting(
         if not isinstance(node, dict):
             return None
         node = node.get(key)
+
+    return parser.parse_args()
+
 
     if node in (None, ""):
         return None
@@ -150,12 +156,18 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     amazon_config = AmazonConfig(
         cookie_file=args.cookies,
+
         driver_path=driver_path,
     )
     gmail_config = GmailConfig(
         credentials_file=args.credentials,
         token_file=args.token,
     )
+
+        driver_path=args.chrome_driver,
+    )
+    gmail_config = GmailConfig(credentials_file=args.credentials, token_file=args.token)
+
 
     amazon_fetcher = AmazonOrderFetcher(config=amazon_config)
     gmail_client = GmailClient(config=gmail_config)
