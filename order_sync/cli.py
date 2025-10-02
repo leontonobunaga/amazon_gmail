@@ -54,6 +54,13 @@ def parse_args() -> argparse.Namespace:
         default=Path("token.json"),
         help="Gmail APIのアクセストークン保存ファイル",
     )
+    parser.add_argument(
+        "--chrome-driver",
+        dest="chrome_driver",
+        type=Path,
+        default=None,
+        help="既存のChromeDriverバイナリへのパス (指定すると自動ダウンロードをスキップ)",
+    )
     return parser.parse_args()
 
 
@@ -90,7 +97,10 @@ def main() -> None:
     end = datetime.strptime(args.end_date, "%Y-%m-%d")
 
 
-    amazon_config = AmazonConfig(cookie_file=args.cookies)
+    amazon_config = AmazonConfig(
+        cookie_file=args.cookies,
+        driver_path=args.chrome_driver,
+    )
     gmail_config = GmailConfig(credentials_file=args.credentials, token_file=args.token)
 
     amazon_fetcher = AmazonOrderFetcher(config=amazon_config)

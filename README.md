@@ -62,6 +62,7 @@ python main.py 2023-09-01 2023-09-30 \
 - `--output` でCSVの出力先を指定できます (既定値: `orders.csv`)。
 - `--cookies` はAmazonセッションの保存先ファイルを指定します。
 - `--credentials` はGmail APIのクライアントシークレットファイル、`--token` はアクセストークンの保存先です。
+- `--chrome-driver` で既にダウンロード済みのChromeDriverバイナリを指定できます。
 
 実行後、指定したCSVファイルに次の列が出力されます。
 
@@ -83,6 +84,11 @@ python main.py 2023-09-01 2023-09-30 \
 
 - Amazonのページ構造は変更される可能性があります。レイアウト変更により要素が取得できなくなった場合は、`order_sync/amazon.py` のセレクタを調整してください。
 - `webdriver-manager` がブラウザドライバーをダウンロードするため、初回実行時にインターネット接続が必要です。
+- Windows 32bit 環境や企業ネットワークなど、`webdriver-manager` が互換性のあるChromeDriverを取得できない場合は手動でドライバーを用意してください。
+  1. 使用しているChromeのバージョンを確認し、[Chrome for Testing (ChromeDriver) の公式ダウンロードページ](https://googlechromelabs.github.io/chrome-for-testing/) から対応するバージョンとプラットフォームのアーカイブを取得します。
+  2. アーカイブを解凍し、`chromedriver`（Windowsでは `chromedriver.exe`）を任意のフォルダーに配置します。
+  3. ツールを実行する際に `--chrome-driver` オプションで配置したファイルへのパスを指定します（例: `python main.py 2023-09-01 2023-09-30 --chrome-driver C:\\tools\\chromedriver.exe`）。
+  4. Pythonコードから直接設定する場合は `AmazonConfig(driver_path=Path("C:/tools/chromedriver.exe"))` のように指定できます。
 - Gmailの検索は最大5件のメールを対象にしています。必要に応じて `order_sync/gmail_client.py` の `find_status` 内で調整してください。
 - 取得したCSVには個人情報が含まれるため、適切に管理・保管してください。
 
