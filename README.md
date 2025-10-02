@@ -17,6 +17,8 @@
    pip install -r requirements.txt
    ```
 
+   > `requirements.txt` に PyInstaller も含まれているため、後述の EXE 化手順を行う場合に追加インストールは不要です。
+
 2. **Gmail API の設定（初心者向けステップ）**
    1. [Google Cloud Console](https://console.cloud.google.com/) を開き、右上の「プロジェクトを選択」→「新しいプロジェクト」をクリックして任意の名前でプロジェクトを作成します。
    2. 左上のハンバーガーメニューから「APIとサービス」→「ライブラリ」を開き、検索ボックスで「Gmail API」を検索して「有効にする」をクリックします。
@@ -79,8 +81,8 @@ python main.py --start-date 2023-09-01 --end-date 2023-09-30 \
 
 ## EXEファイルとして配布したい場合（任意）
 
-1. 事前に `pip install pyinstaller` を実行します。
-2. プロジェクト直下で次のコマンドを実行すると、`dist/main/main.exe` が生成されます。
+1. 追加のライブラリは不要です（`pyinstaller` は既に `requirements.txt` に含まれています）。
+2. プロジェクト直下で次のコマンドを実行すると、`dist/order_sync_tool.exe` が生成されます。
    ```bash
    pyinstaller --onefile --name order_sync_tool main.py
    ```
